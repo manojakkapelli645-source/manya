@@ -1,0 +1,4 @@
+backend/civicmap.db
+backend/uploads
+.vscode
+run.bat

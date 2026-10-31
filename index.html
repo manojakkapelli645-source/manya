@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem("civicmap_theme_clean");
+        document.documentElement.classList.toggle("dark", savedTheme === "dark");
+      } catch (e) {}
+    })();
+  </script>
+
+  <title>
+    CivicMap Mumbai — Home
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="styles.css"
+  >
+  <link rel="stylesheet" href="auth.css">
+
+</head>
+
+
+<body>
+
+
+  <!-- =====================================================
+       HEADER
+       ===================================================== -->
+
+  <header class="topbar">
+
+    <a
+      class="brand"
+      href="index.html"
+    >
+
+      <div class="brandmark">
+        M
+      </div>
+
+      <div>
+
+        <strong>
+          CivicMap Mumbai
+        </strong>
+
+        <span>
+          Report • Track • Resolve
+        </span>
+
+      </div>
+
+    </a>
+
+
+    <nav class="nav">
+
+      <a
+        class="active"
+        href="index.html"
+      >
+        Home
+      </a>
+
+      <a
+        href="map-report.html"
+      >
+        Map & Report
+      </a>
+
+      <a
+        href="dashboard.html"
+      >
+        Dashboard
+      </a>
+
+      <a
+        href="community.html"
+      >
+        Community
+      </a>
+
+      <a
+        href="about.html"
+      >
+        About
+      </a>
+
+    </nav>
+
+    <button class="mobile-menu-btn" id="mobileMenuToggle" type="button" aria-label="Open navigation" aria-expanded="false">☰</button>
+
+
+
+    <!-- DARK MODE — HOME ONLY -->
+
+    <div class="header-actions">
+
+      <button class="theme-switch" id="themeToggle" type="button" aria-label="Switch theme" title="Switch theme">☾ <span>Dark</span></button>
+
+    </div>
+
+  </header>
+
+
+
+  <!-- =====================================================
+       MAIN
+       ===================================================== -->
+
+  <main>
+
+
+    <!-- ===================================================
+         HERO
+         =================================================== -->
+
+    <section class="hero">
+
+      <div>
+
+        <div class="eyebrow">
+          MUMBAI CIVIC INFRASTRUCTURE
+        </div>
+
+
+        <h1>
+
+          See a problem?
+
+          <br>
+
+          <em>
+            Put it on the map.
+          </em>
+
+        </h1>
+
+
+        <p>
+
+          Report potholes, garbage, drainage,
+          streetlight and other public
+          infrastructure problems with a
+          precise location and photo evidence.
+
+          Then track what happens.
+
+        </p>
+
+
+        <div class="hero-actions">
+
+          <a
+            class="primary"
+            href="map-report.html#report-form"
+          >
+            ＋ Report an issue
+          </a>
+
+
+          <a
+            class="secondary"
+            href="map-report.html"
+          >
+            Explore Mumbai map →
+          </a>
+
+        </div>
+
+
+        <div class="micro">
+
+          ● Mumbai-only civic reporting
+          and community prototype
+
+        </div>
+
+      </div>
+
+
+
+      <!-- HOW IT WORKS -->
+
+      <div class="hero-card">
+
+        <div class="mini-label">
+          HOW IT WORKS
+        </div>
+
+
+        <div class="steps">
+
+          <div>
+
+            <b>
+              01
+            </b>
+
+            <span>
+              Select a location
+            </span>
+
+          </div>
+
+
+          <div>
+
+            <b>
+              02
+            </b>
+
+            <span>
+              Add evidence
+            </span>
+
+          </div>
+
+
+          <div>
+
+            <b>
+              03
+            </b>
+
+            <span>
+              Route to authority
+            </span>
+
+          </div>
+
+
+          <div>
+
+            <b>
+              04
+            </b>
+
+            <span>
+              Track & verify the repair
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ===================================================
+         STATISTICS
+         =================================================== -->
+
+    <section class="stats">
+
+      <div>
+
+        <b>
+          0
+        </b>
+
+        <span>
+          Total reports
+        </span>
+
+      </div>
+
+
+      <div>
+
+        <b>
+          0
+        </b>
+
+        <span>
+          Resolved
+        </span>
+
+      </div>
+
+
+      <div>
+
+        <b>
+          0
+        </b>
+
+        <span>
+          In progress
+        </span>
+
+      </div>
+
+
+      <div>
+
+        <b>
+          0
+        </b>
+
+        <span>
+          Pending
+        </span>
+
+      </div>
+
+
+      <div>
+
+        <b>
+          —
+        </b>
+
+        <span>
+          Latest update
+        </span>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ===================================================
+         FEATURES
+         =================================================== -->
+
+    <section class="section container">
+
+
+      <div class="section-head">
+
+        <div>
+
+          <div class="eyebrow">
+            ONE MUMBAI PLATFORM
+          </div>
+
+
+          <h2>
+            Everything connected in one place
+          </h2>
+
+
+          <p class="muted">
+
+            Map an issue, submit a formal
+            report, talk with neighbours,
+            and follow the resolution trail.
+
+          </p>
+
+        </div>
+
+      </div>
+
+
+
+      <div class="about-grid">
+
+
+        <!-- FEATURE 1 -->
+
+        <div class="feature">
+
+          <div class="eyebrow">
+            01 · MAP & REPORT
+          </div>
+
+
+          <h3>
+            Pin the exact problem location
+          </h3>
+
+
+          <p>
+
+            Use the Mumbai OpenStreetMap
+            interface, choose the civic issue,
+            write a heading and detailed
+            description, attach up to five
+            photos, and tag the responsible
+            civic or government body.
+
+          </p>
+
+
+          <a
+            class="secondary"
+            href="map-report.html"
+            style="
+              display:inline-block;
+              margin-top:10px;
+            "
+          >
+            Open Map & Report →
+          </a>
+
+        </div>
+
+
+
+        <!-- FEATURE 2 -->
+
+        <div class="feature">
+
+          <div class="eyebrow">
+            02 · YOUR REPORTS
+          </div>
+
+
+          <h3>
+            Track what you submitted
+          </h3>
+
+
+          <p>
+
+            After submission, the reporting
+            page reloads cleanly while your
+            previous reports remain available
+            in the Your Reports section with
+            complaint IDs and status.
+
+          </p>
+
+        </div>
+
+
+
+        <!-- FEATURE 3 -->
+
+        <div class="feature">
+
+          <div class="eyebrow">
+            03 · COMMUNITY
+          </div>
+
+
+          <h3>
+            Talk about local problems
+          </h3>
+
+
+          <p>
+
+            A separate community page lets
+            residents post discussions,
+            respond to one another, and see
+            active Mumbai civic conversations
+            without confusing them with formal
+            government complaints.
+
+          </p>
+
+
+          <a
+            class="secondary"
+            href="community.html"
+            style="
+              display:inline-block;
+              margin-top:10px;
+            "
+          >
+            Open Community →
+          </a>
+
+        </div>
+
+
+
+        <!-- FEATURE 4 -->
+
+        <div class="feature">
+
+          <div class="eyebrow">
+            04 · PROJECT OUTCOMES
+          </div>
+
+
+          <h3>
+            See what happened after civic work
+          </h3>
+
+
+          <p>
+
+            Completed, pending and
+            failed/unresolved projects can
+            be shown with photo and video
+            evidence.
+
+          </p>
+
+
+          <a
+            class="secondary"
+            href="dashboard.html#projects"
+            style="
+              display:inline-block;
+              margin-top:10px;
+            "
+          >
+            View Project Outcomes →
+          </a>
+
+        </div>
+
+
+
+        <!-- FEATURE 5 -->
+
+        <div class="feature">
+
+          <div class="eyebrow">
+            05 · AUTHORITY DASHBOARD
+          </div>
+
+
+          <h3>
+            Route reports to the responsible body
+          </h3>
+
+
+          <p>
+
+            Submitted reports appear in the
+            dashboard with category, location,
+            photo count, complaint ID,
+            authority tag and current status.
+
+          </p>
+
+
+          <a
+            class="secondary"
+            href="dashboard.html"
+            style="
+              display:inline-block;
+              margin-top:10px;
+            "
+          >
+            Open Dashboard →
+          </a>
+
+        </div>
+
+
+
+        <!-- FEATURE 6 -->
+
+        <div class="feature">
+
+          <div class="eyebrow">
+            06 · TRANSPARENCY
+          </div>
+
+
+          <h3>
+            Follow the complete civic journey
+          </h3>
+
+
+          <p>
+
+            CivicMap connects reporting,
+            location, authority routing,
+            status updates and resolution
+            evidence into one easy-to-understand
+            workflow.
+
+          </p>
+
+        </div>
+
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ===================================================
+         FINAL CALL TO ACTION
+         =================================================== -->
+
+    <section
+      class="section"
+      style="
+        background:var(--surface2);
+      "
+    >
+
+      <div class="container">
+
+        <div class="community-hero">
+
+          <div class="eyebrow">
+            REPORT • TRACK • RESOLVE
+          </div>
+
+
+          <h2
+            style="
+              font-size:36px;
+            "
+          >
+            A complete civic issue journey
+            for Mumbai.
+          </h2>
+
+
+          <p>
+
+            Citizen report →
+
+            responsible authority →
+
+            status updates →
+
+            resolution evidence →
+
+            citizen verification.
+
+          </p>
+
+
+          <a
+            class="primary"
+            href="map-report.html#report-form"
+          >
+            Start a report →
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+  </main>
+
+
+
+  <!-- =====================================================
+       FOOTER
+       ===================================================== -->
+
+  <footer class="footer">
+
+    <span>
+      © 2026 CivicMap Mumbai —
+      Academic prototype
+    </span>
+
+
+    <span>
+      Report • Track • Resolve • Verify
+    </span>
+
+  </footer>
+
+
+
+  <!-- =====================================================
+       TOAST
+       ===================================================== -->
+
+  <div
+    id="toast"
+    class="toast"
+  ></div>
+
+
+
+  <!-- =====================================================
+       JAVASCRIPT
+       ===================================================== -->
+
+  <script src="app.js"></script>
+  <script src="auth.js"></script>
+
+
+</body>
+
+</html>

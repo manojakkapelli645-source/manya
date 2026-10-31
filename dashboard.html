@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem("civicmap_theme_clean");
+        document.documentElement.classList.toggle("dark", savedTheme === "dark");
+      } catch (e) {}
+    })();
+  </script>
+
+  <title>CivicMap Mumbai — Dashboard</title>
+
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="auth.css">
+</head>
+
+<body>
+
+  <!-- ================= HEADER ================= -->
+
+  <header class="topbar">
+
+    <a class="brand" href="index.html">
+
+      <div class="brandmark">M</div>
+
+      <div>
+        <strong>CivicMap Mumbai</strong>
+        <span>Report • Track • Resolve</span>
+      </div>
+
+    </a>
+
+
+    <nav class="nav">
+
+      <a href="index.html">
+        Home
+      </a>
+
+      <a href="map-report.html">
+        Map & Report
+      </a>
+
+      <a class="active" href="dashboard.html">
+        Dashboard
+      </a>
+
+      <a href="community.html">
+        Community
+      </a>
+
+      <a href="about.html">
+        About
+      </a>
+
+    </nav>
+
+    <button class="mobile-menu-btn" id="mobileMenuToggle" type="button" aria-label="Open navigation" aria-expanded="false">☰</button>
+
+    <div class="header-actions">
+      <button class="theme-switch" id="themeToggle" type="button" aria-label="Switch theme" title="Switch theme">☾ <span>Dark</span></button>
+    </div>
+
+
+  </header>
+
+
+  <!-- ================= MAIN ================= -->
+
+  <main class="container">
+
+    <section class="page-head">
+
+      <div class="eyebrow">
+        CIVICMAP DASHBOARD
+      </div>
+
+      <h1>
+        Civic reports dashboard
+      </h1>
+
+      <p>
+        Track submitted civic reports and see how issues
+        move through the reporting process.
+      </p>
+
+      <div class="dashboard-demo-note">
+        <strong>Live demo workflow:</strong> a new complaint is submitted immediately, verified after 1 minute, and moves to <b>Work In Progress</b> after 2 minutes.
+      </div>
+
+    </section>
+
+
+    <!-- ================= STATS ================= -->
+
+    <section class="dashboard-summary" aria-label="Complaint summary">
+
+      <article class="dashboard-summary-card">
+        <span class="summary-label">TOTAL COMPLAINTS SUBMITTED</span>
+        <strong id="dashTotal">0</strong>
+        <small>Reported through CivicMap</small>
+      </article>
+
+      <article class="dashboard-summary-card summary-completed">
+        <span class="summary-label">COMPLETED</span>
+        <strong id="dashResolved">0</strong>
+        <small>Issues marked as completed</small>
+      </article>
+
+      <article class="dashboard-summary-card summary-ongoing">
+        <span class="summary-label">ONGOING</span>
+        <strong id="dashOpen">0</strong>
+        <small>Issues currently being worked on</small>
+      </article>
+
+    </section>
+
+
+    <!-- ================= YOUR COMPLAINTS ================= -->
+
+    <section class="section">
+
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">MY COMPLAINTS</div>
+          <h2>Your complaints</h2>
+          <p class="muted">
+            Your complaints and dashboard-added sample complaints appear here with their uploaded image, heading, description, location, Report ID and current status. You can remove a complaint from this section without removing it from Civic Complaints &amp; Progress.
+          </p>
+        </div>
+
+        <a class="primary" href="map-report.html#report-form">
+          ＋ New complaint
+        </a>
+      </div>
+
+      <div id="dashboardMyReports" class="reports-list"></div>
+
+    </section>
+
+
+    <!-- ================= SAMPLE COMPLAINT MANAGEMENT ================= -->
+
+    <section class="section dashboard-admin-section">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">SAMPLE MANAGEMENT</div>
+          <h2>Manage dashboard samples</h2>
+          <p class="muted">
+            Add realistic sample complaints for your academic demonstration. New complaints added here also appear in My Complaints with their uploaded image.
+            Removing a complaint is available only from My Complaints and does not remove it from Civic Complaints &amp; Progress.
+          </p>
+        </div>
+        <button id="resetDemoReports" class="secondary" type="button">↻ Restore My Complaints</button>
+      </div>
+
+      <form id="sampleComplaintForm" class="sample-manager-form">
+        <div class="sample-form-grid">
+          <label>
+            Complaint title
+            <input id="sampleTitle" type="text" placeholder="e.g. Broken streetlight near market" required>
+          </label>
+
+          <label>
+            Issue type
+            <select id="sampleCategory">
+              <option>Pothole</option>
+              <option>Garbage</option>
+              <option>Streetlight</option>
+              <option>Water</option>
+              <option>Footpath</option>
+              <option>Drainage</option>
+              <option>Other</option>
+            </select>
+          </label>
+
+          <label class="sample-form-wide">
+            Address / exact location
+            <input id="sampleAddress" type="text" placeholder="e.g. Near Malad East Market, S.V. Road, Mumbai" required>
+          </label>
+
+          <label class="sample-form-wide">
+            Description
+            <textarea id="sampleDescription" placeholder="Describe the civic problem..." required></textarea>
+          </label>
+
+          <label>
+            Status
+            <select id="sampleStatus">
+              <option>Complaint Submitted</option>
+              <option>Verified</option>
+              <option>In Progress</option>
+              <option>Work Completed</option>
+              <option>Failed</option>
+            </select>
+          </label>
+
+          <label>
+            Authority
+            <input id="sampleAuthority" type="text" value="BMC">
+          </label>
+
+          <label class="sample-form-wide sample-image-upload">
+            Upload complaint image
+            <input
+              id="sampleImage"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+            >
+            <small class="sample-help">
+              Choose a JPG, JPEG, PNG or WEBP image from your computer. Maximum 5 MB.
+            </small>
+            <img
+              id="sampleImagePreview"
+              class="sample-image-preview"
+              alt="Selected complaint image preview"
+              hidden
+            >
+          </label>
+        </div>
+
+        <div class="sample-form-actions">
+          <button class="primary" type="submit">＋ Add Sample Complaint</button>
+          <span class="sample-help">New sample complaints are stored in this browser.</span>
+        </div>
+      </form>
+    </section>
+
+
+    <!-- ================= CIVIC COMPLAINT TRACKING ================= -->
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">LIVE DEMO TRACKING</div>
+          <h2>Civic complaints & progress</h2>
+          <p class="muted">Sample Mumbai complaints show how CivicMap tracks submitted, ongoing, completed and failed work.</p>
+        </div>
+        <span id="sampleCaseCount" class="status">12 sample cases</span>
+      </div>
+      <div id="allComplaintCards" class="reports-grid"></div>
+    </section>
+
+
+    <!-- ================= EMPTY PROJECT SECTION ================= -->
+
+    <section
+      id="projects"
+      class="section">
+
+      <div class="section-head">
+
+        <div>
+
+          <div class="eyebrow">
+            CIVIC PROJECT OUTCOMES
+          </div>
+
+          <h2>
+            Project outcomes
+          </h2>
+
+          <p class="muted">
+            Completed, pending and unresolved civic projects
+            will appear here when project records are added.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="project-filters">
+
+        <button
+          class="project-filter active"
+          onclick="filterProjects('all', this)">
+
+          All
+
+          <span id="projectCount-all">
+            0
+          </span>
+
+        </button>
+
+
+        <button
+          class="project-filter"
+          onclick="filterProjects('completed', this)">
+
+          ✓ Completed
+
+          <span id="projectCount-completed">
+            0
+          </span>
+
+        </button>
+
+
+        <button
+          class="project-filter"
+          onclick="filterProjects('pending', this)">
+
+          ◷ Pending
+
+          <span id="projectCount-pending">
+            0
+          </span>
+
+        </button>
+
+
+        <button
+          class="project-filter"
+          onclick="filterProjects('failed', this)">
+
+          ! Failed / Unresolved
+
+          <span id="projectCount-failed">
+            0
+          </span>
+
+        </button>
+
+      </div>
+
+
+      <div
+        id="projectsGrid"
+        class="projects-grid">
+
+      </div>
+
+    </section>
+
+
+    <!-- ================= ANALYTICS ================= -->
+
+    <section class="section">
+
+      <div class="dashboard-grid">
+
+
+        <!-- CATEGORY -->
+
+        <div class="dash-card">
+
+          <div class="eyebrow">
+            ISSUES BY CATEGORY
+          </div>
+
+          <h3>
+            Report categories
+          </h3>
+
+          <div
+            id="categoryAnalytics"
+            class="empty">
+
+            <h3>
+              No reports yet
+            </h3>
+
+            <p>
+              Category analytics will appear
+              after citizens submit reports.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- RESOLUTION -->
+
+        <div class="dash-card">
+
+          <div class="eyebrow">
+            RESOLUTION
+          </div>
+
+          <h3>
+            Resolution overview
+          </h3>
+
+          <div
+            id="resolutionPercentage"
+            style="
+              font-size:56px;
+              font-weight:900;
+              color:var(--green);
+              margin:20px 0;">
+            0%
+          </div>
+
+          <p class="muted">
+            Resolution statistics will be calculated
+            from submitted reports.
+          </p>
+
+          <span class="status">
+            0 resolved · 0 active
+          </span>
+
+        </div>
+
+
+        <!-- WARD -->
+
+        <div class="dash-card wide">
+
+          <div class="eyebrow">
+            WARD SNAPSHOT
+          </div>
+
+          <h3>
+            Report locations
+          </h3>
+
+          <div
+            id="wardSnapshot"
+            class="empty">
+
+            <h3>
+              No location data yet
+            </h3>
+
+            <p>
+              Ward/location information will appear
+              when reports are submitted.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- AUTHORITY -->
+
+        <div class="dash-card wide">
+
+          <div class="section-head">
+
+            <div>
+
+              <div class="eyebrow">
+                AUTHORITY INBOX
+              </div>
+
+              <h3 style="margin:5px 0">
+                Submitted reports
+              </h3>
+
+              <p class="muted">
+                New civic reports will appear here.
+              </p>
+
+            </div>
+
+
+            <a
+              class="secondary"
+              href="map-report.html#report-form">
+
+              ＋ Create report
+
+            </a>
+
+          </div>
+
+
+          <div
+            id="inbox"
+            class="inbox">
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- ================= FOOTER ================= -->
+
+  <footer class="footer">
+
+    <span>
+      © 2026 CivicMap Mumbai — Academic prototype
+    </span>
+
+    <span>
+      Report • Track • Resolve • Verify
+    </span>
+
+  </footer>
+
+
+  <div
+    id="toast"
+    class="toast">
+  </div>
+
+
+  <script src="app.js"></script>
+  <script src="auth.js"></script>
+
+</body>
+
+</html>

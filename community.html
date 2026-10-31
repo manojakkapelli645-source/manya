@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem("civicmap_theme_clean");
+        document.documentElement.classList.toggle("dark", savedTheme === "dark");
+      } catch (e) {}
+    })();
+  </script>
+
+  <title>
+    CivicMap Mumbai — Community
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="styles.css">
+  <link rel="stylesheet" href="auth.css">
+
+</head>
+
+
+<body>
+
+
+  <!-- ================= HEADER ================= -->
+
+  <header class="topbar">
+
+    <a
+      class="brand"
+      href="index.html">
+
+      <div class="brandmark">
+        M
+      </div>
+
+      <div>
+
+        <strong>
+          CivicMap Mumbai
+        </strong>
+
+        <span>
+          Report • Track • Resolve
+        </span>
+
+      </div>
+
+    </a>
+
+
+    <nav class="nav">
+
+      <a href="index.html">
+        Home
+      </a>
+
+      <a href="map-report.html">
+        Map & Report
+      </a>
+
+      <a href="dashboard.html">
+        Dashboard
+      </a>
+
+      <a
+        class="active"
+        href="community.html">
+
+        Community
+
+      </a>
+
+      <a href="about.html">
+        About
+      </a>
+
+    </nav>
+
+    <button class="mobile-menu-btn" id="mobileMenuToggle" type="button" aria-label="Open navigation" aria-expanded="false">☰</button>
+
+    <div class="header-actions">
+      <button class="theme-switch" id="themeToggle" type="button" aria-label="Switch theme" title="Switch theme">☾ <span>Dark</span></button>
+    </div>
+
+
+  </header>
+
+
+
+  <!-- ================= MAIN ================= -->
+
+  <main class="container">
+
+
+    <!-- INTRO -->
+
+    <section class="page-head">
+
+      <div class="eyebrow">
+        MUMBAI CIVIC COMMUNITY
+      </div>
+
+      <h1>
+        Your neighbourhood.
+        Your voice.
+      </h1>
+
+      <p>
+        Share local updates, discuss civic problems and
+        connect with other residents.
+      </p>
+
+    </section>
+
+
+
+    <!-- COMMUNITY HERO -->
+
+    <section
+      class="community-hero"
+      style="margin-bottom:28px;">
+
+      <div>
+
+        <div class="eyebrow">
+          COMMUNITY SPACE
+        </div>
+
+        <h2>
+          Talk about what is happening around you.
+        </h2>
+
+        <p>
+          Use this space for neighbourhood discussions,
+          updates and questions. For an actual civic
+          complaint, use the Map & Report page.
+        </p>
+
+      </div>
+
+
+      <a
+        class="primary"
+        href="map-report.html#report-form">
+
+        Report an Issue →
+
+      </a>
+
+    </section>
+
+
+
+    <!-- ================= COMMUNITY GRID ================= -->
+
+    <section
+      class="community-grid">
+
+
+      <!-- LEFT: FEED -->
+
+      <div>
+
+
+        <div
+          class="community-section-heading">
+
+          <div>
+
+            <div class="eyebrow">
+              COMMUNITY FEED
+            </div>
+
+            <h2>
+              Recent discussions
+            </h2>
+
+          </div>
+
+
+          <span
+            class="community-count">
+
+            <b id="communityCount">
+              0
+            </b>
+
+            discussions
+
+          </span>
+
+        </div>
+
+
+        <div
+          id="communityFeed"
+          class="community-feed">
+
+        </div>
+
+
+      </div>
+
+
+
+      <!-- RIGHT: CREATE POST -->
+
+      <aside
+        class="card compose">
+
+
+        <div class="eyebrow">
+          START A DISCUSSION
+        </div>
+
+
+        <h2>
+          Share an update
+        </h2>
+
+
+        <p class="muted">
+          Tell nearby residents about something
+          happening in your area.
+        </p>
+
+
+        <!-- USERNAME -->
+        <label
+          class="field-label"
+          for="postUsername">
+
+          Username
+
+        </label>
+
+        <input
+          id="postUsername"
+          class="input"
+          maxlength="40"
+          placeholder="Example: @aamay_mumbai"
+          autocomplete="nickname">
+
+        <!-- POSITION / ROLE -->
+        <label
+          class="field-label"
+          for="postPosition">
+
+          Position / Role
+
+        </label>
+
+        <select
+          id="postPosition"
+          class="select">
+          <option value="Resident / Community Member">
+            Resident / Community Member
+          </option>
+          <option value="Ward Maintenance Officer • BMC">
+            Ward Maintenance Officer • BMC
+          </option>
+          <option value="Sanitation Inspector • BMC">
+            Sanitation Inspector • BMC
+          </option>
+          <option value="Road Maintenance Engineer • BMC">
+            Road Maintenance Engineer • BMC
+          </option>
+          <option value="Water Supply Officer • BMC">
+            Water Supply Officer • BMC
+          </option>
+          <option value="Drainage Maintenance Officer • BMC">
+            Drainage Maintenance Officer • BMC
+          </option>
+        </select>
+
+        <!-- TITLE -->
+
+        <label
+          class="field-label"
+          for="postTitle">
+
+          Heading
+
+        </label>
+
+
+        <input
+          id="postTitle"
+          class="input"
+          maxlength="100"
+          placeholder="Example: Garbage not collected near our lane">
+
+
+
+        <!-- CATEGORY -->
+
+        <label
+          class="field-label"
+          for="postCategory">
+
+          Issue type
+
+        </label>
+
+
+        <select
+          id="postCategory"
+          class="select">
+
+          <option value="Pothole">
+            Pothole
+          </option>
+
+          <option value="Garbage">
+            Garbage
+          </option>
+
+          <option value="Streetlight">
+            Streetlight
+          </option>
+
+          <option value="Water">
+            Water
+          </option>
+
+          <option value="Footpath">
+            Footpath
+          </option>
+
+          <option value="Other">
+            Other
+          </option>
+
+        </select>
+
+
+
+        <!-- LOCATION -->
+
+        <label
+          class="field-label"
+          for="postLocation">
+
+          Location
+
+        </label>
+
+
+        <input
+          id="postLocation"
+          class="input"
+          maxlength="80"
+          placeholder="Example: Kharghar">
+
+
+
+        <!-- MESSAGE -->
+
+        <label
+          class="field-label"
+          for="postBody">
+
+          Message
+
+        </label>
+
+
+        <textarea
+          id="postBody"
+          class="textarea"
+          maxlength="1000"
+          rows="6"
+          placeholder="Tell the Mumbai community what you noticed..."></textarea>
+
+
+
+        <!-- POST BUTTON -->
+
+        <button
+          id="communityPostButton"
+          class="primary full"
+          type="button"
+          >
+
+          Post to Community →
+
+        </button>
+
+
+        <div class="community-note">
+
+          <span>
+            💡
+          </span>
+
+          <p>
+            Community posts are for discussion.
+            They do not automatically create an
+            official government complaint.
+          </p>
+
+        </div>
+
+
+        <a
+          class="secondary full"
+          href="map-report.html#report-form"
+          style="text-align:center;display:block;">
+
+          Need official action? Report an issue →
+
+        </a>
+
+
+      </aside>
+
+    </section>
+
+  </main>
+
+
+
+  <!-- ================= FOOTER ================= -->
+
+  <footer class="footer">
+
+    <span>
+      © 2026 CivicMap Mumbai — Academic prototype
+    </span>
+
+    <span>
+      Report • Track • Resolve • Verify
+    </span>
+
+  </footer>
+
+
+  <div
+    id="toast"
+    class="toast">
+  </div>
+
+
+  <script src="app.js"></script>
+  <script src="auth.js"></script>
+
+</body>
+
+</html>

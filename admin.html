@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem("civicmap_theme_clean");
+        document.documentElement.classList.toggle("dark", savedTheme === "dark");
+      } catch (e) {}
+    })();
+  </script>
+
+  <title>CivicMap Mumbai — Admin</title>
+
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="auth.css">
+</head>
+
+<body>
+
+  <!-- ================= HEADER ================= -->
+
+  <header class="topbar">
+
+    <a class="brand" href="index.html">
+      <div class="brandmark">M</div>
+      <div>
+        <strong>CivicMap Mumbai</strong>
+        <span>Report • Track • Resolve</span>
+      </div>
+    </a>
+
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="map-report.html">Map & Report</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="community.html">Community</a>
+      <a href="about.html">About</a>
+    </nav>
+
+    <button class="mobile-menu-btn" id="mobileMenuToggle" type="button" aria-label="Open navigation" aria-expanded="false">☰</button>
+
+    <div class="header-actions">
+      <button class="theme-switch" id="themeToggle" type="button" aria-label="Switch theme" title="Switch theme">☾ <span>Dark</span></button>
+    </div>
+
+  </header>
+
+
+  <!-- ================= ADMIN ================= -->
+
+  <main class="container admin-wrap" id="adminMain" hidden>
+
+    <section class="page-head">
+      <div class="eyebrow">ADMIN PANEL</div>
+      <h1>Manage complaints</h1>
+      <p>See every complaint submitted through CivicMap, update its status, review photos and remove spam.</p>
+    </section>
+
+    <!-- numbers -->
+    <section class="admin-stats" id="adminStats" aria-label="Summary"></section>
+
+    <!-- tabs -->
+    <div class="admin-tabs" role="tablist">
+      <button type="button" class="active" id="tabComplaints" role="tab" aria-selected="true">Complaints</button>
+      <button type="button" id="tabUsers" role="tab" aria-selected="false">Users</button>
+    </div>
+
+    <!-- COMPLAINTS -->
+    <section id="complaintsPanel">
+
+      <div class="admin-tools">
+        <input id="searchBox" type="search" placeholder="Search by title, ID, location or reporter…" aria-label="Search complaints">
+
+        <select id="statusFilter" aria-label="Filter by status">
+          <option value="">All statuses</option>
+        </select>
+
+        <select id="categoryFilter" aria-label="Filter by category">
+          <option value="">All categories</option>
+        </select>
+
+        <button class="secondary" id="refreshButton" type="button">↻ Refresh</button>
+      </div>
+
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Complaint</th>
+              <th>Category</th>
+              <th>Reporter</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="complaintRows">
+            <tr><td colspan="7" class="admin-loading">Loading complaints…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+    <!-- USERS -->
+    <section id="usersPanel" hidden>
+      <div class="admin-table-wrap" style="margin-top:18px">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Complaints</th>
+              <th>Joined</th>
+            </tr>
+          </thead>
+          <tbody id="userRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- shown while checking the login -->
+  <main class="container" id="adminChecking">
+    <p class="admin-loading">Checking your login…</p>
+  </main>
+
+
+  <!-- ================= COMPLAINT DETAILS ================= -->
+
+  <dialog class="admin-dialog" id="detailDialog">
+    <div class="admin-dialog-body">
+      <h3 id="detailTitle"></h3>
+      <dl id="detailList"></dl>
+      <div id="detailPhotos" class="admin-photos"></div>
+      <div class="admin-dialog-actions">
+        <button class="secondary" id="detailClose" type="button">Close</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ================= WHY FAILED ================= -->
+
+  <dialog class="admin-dialog" id="failDialog">
+    <form method="dialog" class="admin-dialog-body" id="failForm">
+      <h3>Why did this complaint fail?</h3>
+      <p class="muted" style="margin:0">This reason is shown to the citizen on their dashboard.</p>
+      <textarea id="failReason" maxlength="500" placeholder="e.g. The reported area belongs to a private property."></textarea>
+      <div class="admin-dialog-actions">
+        <button class="secondary" id="failCancel" type="button">Cancel</button>
+        <button class="primary" id="failSave" type="submit">Save status</button>
+      </div>
+    </form>
+  </dialog>
+
+
+  <!-- ================= FOOTER ================= -->
+
+  <footer class="footer">
+    <span>© 2026 CivicMap Mumbai — Academic prototype</span>
+    <span>Report • Track • Resolve • Verify</span>
+  </footer>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="app.js"></script>
+  <script src="auth.js"></script>
+
+  <script>
+    (function () {
+
+      const $ = (id) => document.getElementById(id);
+
+      const STATUSES = [
+        "Complaint Submitted",
+        "Verified",
+        "Work In Progress",
+        "Work Completed",
+        "Failed"
+      ];
+
+      let reports = [];
+      let uploadsBase = CivicAuth.apiBase;
+
+      /* ---------- helpers ---------- */
+
+      function esc(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (c) => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+        }[c]));
+      }
+
+      function say(message) {
+        if (typeof toast === "function") toast(message);
+      }
+
+      function pillClass(status) {
+        const value = String(status).toLowerCase();
+        if (value.includes("fail")) return "status-failed";
+        if (value.includes("complete")) return "status-completed";
+        if (value.includes("progress")) return "status-in_progress";
+        return "status-submitted";
+      }
+
+      function when(iso) {
+        const date = new Date(iso);
+        return Number.isNaN(date.getTime())
+          ? "—"
+          : date.toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
+      }
+
+      function goToLogin() {
+        window.location.href = "login.html?next=admin.html";
+      }
+
+      /* ---------- numbers at the top ---------- */
+
+      async function loadStats() {
+        const s = await CivicAuth.request("/api/admin/stats");
+        const by = s.by_status || {};
+        const count = (...names) => names.reduce((sum, n) => sum + (by[n] || 0), 0);
+
+        const cards = [
+          ["Total complaints", s.total],
+          ["New", count("Reported", "Complaint Submitted")],
+          ["Verified", count("Verified")],
+          ["In progress", count("Work In Progress")],
+          ["Completed", count("Work Completed")],
+          ["Failed", count("Failed")],
+          ["Citizens", s.users]
+        ];
+
+        $("adminStats").innerHTML = cards
+          .map(([label, value]) => `<div class="admin-stat"><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`)
+          .join("");
+      }
+
+      /* ---------- complaint table ---------- */
+
+      function fillFilters() {
+        const statuses = [...new Set([...STATUSES, ...reports.map((r) => r.status)])];
+        const categories = [...new Set(reports.map((r) => r.category))].sort();
+        const keepStatus = $("statusFilter").value;
+        const keepCategory = $("categoryFilter").value;
+
+        $("statusFilter").innerHTML =
+          '<option value="">All statuses</option>' +
+          statuses.map((s) => `<option>${esc(s)}</option>`).join("");
+
+        $("categoryFilter").innerHTML =
+          '<option value="">All categories</option>' +
+          categories.map((c) => `<option>${esc(c)}</option>`).join("");
+
+        $("statusFilter").value = keepStatus;
+        $("categoryFilter").value = keepCategory;
+      }
+
+      function statusSelect(report) {
+        const known = STATUSES.includes(report.status);
+        const options = (known ? "" : `<option selected disabled>${esc(report.status)}</option>`) +
+          STATUSES.map((s) => `<option ${s === report.status ? "selected" : ""}>${esc(s)}</option>`).join("");
+        return `<select data-status-for="${esc(report.id)}" aria-label="Change status">${options}</select>`;
+      }
+
+      function renderComplaints() {
+
+        const text = $("searchBox").value.trim().toLowerCase();
+        const status = $("statusFilter").value;
+        const category = $("categoryFilter").value;
+
+        const rows = reports.filter((r) =>
+          (!status || r.status === status) &&
+          (!category || r.category === category) &&
+          (!text || [r.id, r.title, r.location, r.reporter_name, r.reporter_email, r.description]
+            .some((v) => String(v || "").toLowerCase().includes(text)))
+        );
+
+        if (!rows.length) {
+          $("complaintRows").innerHTML = `<tr><td colspan="7" class="admin-empty">${
+            reports.length ? "No complaints match your search." : "No complaints have been submitted yet."
+          }</td></tr>`;
+          return;
+        }
+
+        $("complaintRows").innerHTML = rows.map((r) => `
+          <tr>
+            <td class="id">${esc(r.id)}</td>
+            <td>
+              <div class="admin-title">${esc(r.title)}</div>
+              <div class="admin-sub">📍 ${esc(r.location || "Mumbai")}</div>
+            </td>
+            <td>${esc(r.category)}</td>
+            <td>${r.reporter_name
+              ? `${esc(r.reporter_name)}<div class="admin-sub">${esc(r.reporter_email)}</div>`
+              : '<span class="admin-sub">Guest</span>'}</td>
+            <td>${esc(when(r.created_at))}</td>
+            <td>${statusSelect(r)}</td>
+            <td>
+              <div class="admin-actions">
+                <button type="button" data-view="${esc(r.id)}">View</button>
+                <button type="button" class="danger" data-delete="${esc(r.id)}">Delete</button>
+              </div>
+            </td>
+          </tr>`).join("");
+      }
+
+      async function loadComplaints() {
+        const data = await CivicAuth.request("/api/admin/reports");
+        reports = data.reports || [];
+        fillFilters();
+        renderComplaints();
+      }
+
+      /* ---------- change status ---------- */
+
+      async function saveStatus(id, status, reason) {
+        try {
+          await CivicAuth.request(`/api/admin/reports/${encodeURIComponent(id)}`, {
+            method: "PATCH",
+            body: { status, failure_reason: reason || "" }
+          });
+          say(`${id} marked as ${status}.`);
+        } catch (error) {
+          say(error.message);
+        }
+        await refresh();
+      }
+
+      let pendingFail = null;
+
+      $("complaintRows").addEventListener("change", (event) => {
+        const select = event.target.closest("[data-status-for]");
+        if (!select) return;
+
+        const id = select.dataset.statusFor;
+        const status = select.value;
+
+        if (status === "Failed") {
+          const report = reports.find((r) => r.id === id);
+          pendingFail = id;
+          $("failReason").value = report?.failure_reason || "";
+          $("failDialog").showModal();
+        } else {
+          saveStatus(id, status, "");
+        }
+      });
+
+      $("failForm").addEventListener("submit", () => {
+        const id = pendingFail;
+        pendingFail = null;
+        if (id) saveStatus(id, "Failed", $("failReason").value.trim());
+      });
+
+      $("failCancel").addEventListener("click", () => {
+        pendingFail = null;
+        $("failDialog").close();
+        renderComplaints(); // put the dropdown back
+      });
+
+      $("failDialog").addEventListener("cancel", () => {
+        pendingFail = null;
+        renderComplaints();
+      });
+
+      /* ---------- view / delete ---------- */
+
+      $("complaintRows").addEventListener("click", async (event) => {
+
+        const viewButton = event.target.closest("[data-view]");
+        const deleteButton = event.target.closest("[data-delete]");
+
+        if (viewButton) showDetails(viewButton.dataset.view);
+
+        if (deleteButton) {
+          const id = deleteButton.dataset.delete;
+          const report = reports.find((r) => r.id === id);
+
+          if (!window.confirm(`Delete "${report?.title || id}" permanently? This cannot be undone.`)) return;
+
+          try {
+            await CivicAuth.request(`/api/admin/reports/${encodeURIComponent(id)}`, { method: "DELETE" });
+            say("Complaint deleted.");
+          } catch (error) {
+            say(error.message);
+          }
+          await refresh();
+        }
+      });
+
+      async function showDetails(id) {
+
+        const r = reports.find((item) => item.id === id);
+        if (!r) return;
+
+        $("detailTitle").textContent = r.title;
+
+        const mapLink = `https://www.openstreetmap.org/?mlat=${encodeURIComponent(r.latitude)}&mlon=${encodeURIComponent(r.longitude)}#map=17/${encodeURIComponent(r.latitude)}/${encodeURIComponent(r.longitude)}`;
+
+        $("detailList").innerHTML = `
+          <dt>Complaint ID</dt><dd>${esc(r.id)}</dd>
+          <dt>Status</dt><dd><span class="status ${pillClass(r.status)}">${esc(r.status)}</span></dd>
+          <dt>Category</dt><dd>${esc(r.category)}</dd>
+          <dt>Authority</dt><dd>${esc(r.authority || "—")}</dd>
+          <dt>Location</dt><dd>${esc(r.location || "—")}<br><a href="${mapLink}" target="_blank" rel="noopener">Open on map ↗</a></dd>
+          <dt>Reporter</dt><dd>${r.reporter_name ? `${esc(r.reporter_name)} (${esc(r.reporter_email)})` : "Guest"}</dd>
+          <dt>Submitted</dt><dd>${esc(when(r.created_at))}</dd>
+          <dt>Description</dt><dd>${esc(r.description)}</dd>
+          ${r.failure_reason ? `<dt>Failure reason</dt><dd>${esc(r.failure_reason)}</dd>` : ""}
+        `;
+
+        $("detailPhotos").innerHTML = r.photo_count ? '<span class="admin-sub">Loading photos…</span>' : "";
+        $("detailDialog").showModal();
+
+        if (!r.photo_count) return;
+
+        try {
+          const full = await CivicAuth.request(`/api/reports/${encodeURIComponent(id)}`);
+          $("detailPhotos").innerHTML = (full.photos || []).map((p) => {
+            const url = `${uploadsBase}${p.url}`;
+            return `<a href="${esc(url)}" target="_blank" rel="noopener"><img src="${esc(url)}" alt="Complaint photo" loading="lazy"></a>`;
+          }).join("") || '<span class="admin-sub">No photos.</span>';
+        } catch (error) {
+          $("detailPhotos").innerHTML = '<span class="admin-sub">Could not load photos.</span>';
+        }
+      }
+
+      $("detailClose").addEventListener("click", () => $("detailDialog").close());
+
+      /* ---------- users tab ---------- */
+
+      async function loadUsers() {
+        const data = await CivicAuth.request("/api/admin/users");
+        $("userRows").innerHTML = (data.users || []).map((u) => `
+          <tr>
+            <td class="admin-title">${esc(u.name)}</td>
+            <td>${esc(u.email)}</td>
+            <td>${esc(u.role === "admin" ? "Admin" : "Citizen")}</td>
+            <td>${esc(u.report_count)}</td>
+            <td>${esc(when(u.created_at))}</td>
+          </tr>`).join("");
+      }
+
+      function showTab(name) {
+        const complaints = name === "complaints";
+        $("complaintsPanel").hidden = !complaints;
+        $("usersPanel").hidden = complaints;
+        $("tabComplaints").classList.toggle("active", complaints);
+        $("tabUsers").classList.toggle("active", !complaints);
+        $("tabComplaints").setAttribute("aria-selected", String(complaints));
+        $("tabUsers").setAttribute("aria-selected", String(!complaints));
+        if (!complaints) loadUsers().catch((e) => say(e.message));
+      }
+
+      $("tabComplaints").addEventListener("click", () => showTab("complaints"));
+      $("tabUsers").addEventListener("click", () => showTab("users"));
+
+      /* ---------- filters + refresh ---------- */
+
+      ["input", "change"].forEach((name) => {
+        $("searchBox").addEventListener(name, renderComplaints);
+      });
+      $("statusFilter").addEventListener("change", renderComplaints);
+      $("categoryFilter").addEventListener("change", renderComplaints);
+
+      async function refresh() {
+        try {
+          await Promise.all([loadStats(), loadComplaints()]);
+        } catch (error) {
+          if (error.status === 401 || error.status === 403) return goToLogin();
+          say(error.message);
+        }
+      }
+
+      $("refreshButton").addEventListener("click", async () => {
+        await refresh();
+        say("Updated.");
+      });
+
+      /* ---------- start: only admins may stay ---------- */
+
+      async function start() {
+
+        if (!CivicAuth.getToken()) return goToLogin();
+
+        try {
+          const me = await CivicAuth.request("/api/auth/me");
+
+          if (me.user.role !== "admin") {
+            $("adminChecking").innerHTML =
+              '<p class="admin-loading">This page is only for admins. <a href="index.html">Go to home</a></p>';
+            return;
+          }
+
+          CivicAuth.save(CivicAuth.getToken(), me.user);
+
+        } catch (error) {
+
+          if (error.status === 401) return goToLogin();
+
+          $("adminChecking").innerHTML =
+            `<p class="admin-loading">${esc(error.message)}</p>`;
+          return;
+        }
+
+        $("adminChecking").hidden = true;
+        $("adminMain").hidden = false;
+
+        await refresh();
+      }
+
+      start();
+
+    })();
+  </script>
+
+</body>
+
+</html>

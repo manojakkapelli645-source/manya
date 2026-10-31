@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem("civicmap_theme_clean");
+        document.documentElement.classList.toggle("dark", savedTheme === "dark");
+      } catch (e) {}
+    })();
+  </script>
+
+  <title>
+    CivicMap Mumbai — Map & Report
+  </title>
+
+
+  <!-- Leaflet Map CSS -->
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    crossorigin="anonymous"
+  >
+
+
+  <!-- CivicMap CSS -->
+
+  <link
+    rel="stylesheet"
+    href="styles.css"
+  >
+  <link rel="stylesheet" href="auth.css">
+
+</head>
+
+
+<body>
+
+
+  <!-- =====================================================
+       HEADER
+       ===================================================== -->
+
+  <header class="topbar">
+
+    <a
+      class="brand"
+      href="index.html"
+    >
+
+      <div class="brandmark">
+        M
+      </div>
+
+      <div>
+
+        <strong>
+          CivicMap Mumbai
+        </strong>
+
+        <span>
+          Report • Track • Resolve
+        </span>
+
+      </div>
+
+    </a>
+
+
+    <nav class="nav">
+
+      <a
+        href="index.html"
+      >
+        Home
+      </a>
+
+      <a
+        class="active"
+        href="map-report.html"
+      >
+        Map & Report
+      </a>
+
+      <a
+        href="dashboard.html"
+      >
+        Dashboard
+      </a>
+
+      <a
+        href="community.html"
+      >
+        Community
+      </a>
+
+      <a
+        href="about.html"
+      >
+        About
+      </a>
+
+    </nav>
+
+    <button class="mobile-menu-btn" id="mobileMenuToggle" type="button" aria-label="Open navigation" aria-expanded="false">☰</button>
+
+
+
+    <div class="header-actions">
+
+      <button class="theme-switch" id="themeToggle" type="button" aria-label="Switch theme" title="Switch theme">☾ <span>Dark</span></button>
+
+    </div>
+
+  </header>
+
+
+
+  <!-- =====================================================
+       MAIN
+       ===================================================== -->
+
+  <main class="container">
+
+
+    <!-- ===================================================
+         PAGE INTRO
+         =================================================== -->
+
+    <section class="page-head">
+
+      <div class="eyebrow">
+        MUMBAI MAP + OFFICIAL REPORTING
+      </div>
+
+
+      <h1>
+        Map & Report
+      </h1>
+
+
+      <p>
+
+        Click a location on the Mumbai map,
+        then submit a formal civic complaint
+        with a heading, detailed description,
+        category, up to five photos, and a
+        responsible authority tag.
+
+      </p>
+
+    </section>
+
+
+
+    <!-- ===================================================
+         MAP SECTION
+         =================================================== -->
+
+    <section
+      class="section"
+      style="padding-top:0"
+    >
+
+      <div class="map-layout">
+
+
+        <!-- MAP -->
+
+        <div class="map-shell">
+
+          <div
+            id="map"
+            class="map"
+          ></div>
+
+
+          <div class="map-note">
+
+            <b>
+              OpenStreetMap • Mumbai
+            </b>
+
+            <span>
+              Click anywhere on the map
+              to select the reporting location.
+            </span>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- ISSUE SIDE PANEL -->
+
+        <aside class="side-panel">
+
+          <div class="eyebrow">
+            ISSUE MAP
+          </div>
+
+
+          <h3
+            style="
+              margin:8px 0 15px;
+              font-size:22px;
+            "
+          >
+            Reported civic issues
+          </h3>
+
+
+          <!-- MAP FILTERS -->
+
+          <div class="filters">
+
+            <button
+              type="button"
+              class="filter active"
+              data-filter="all"
+            >
+              All
+            </button>
+
+
+            <button
+              type="button"
+              class="filter"
+              data-filter="Pothole"
+            >
+              Potholes
+            </button>
+
+
+            <button
+              type="button"
+              class="filter"
+              data-filter="Garbage"
+            >
+              Garbage
+            </button>
+
+
+            <button
+              type="button"
+              class="filter"
+              data-filter="Water"
+            >
+              Water
+            </button>
+
+
+            <button
+              type="button"
+              class="filter"
+              data-filter="Streetlight"
+            >
+              Streetlights
+            </button>
+
+
+            <button
+              type="button"
+              class="filter"
+              data-filter="Footpath"
+            >
+              Footpaths
+            </button>
+
+          </div>
+
+
+          <!-- ISSUE LIST -->
+
+          <div id="issueList"></div>
+
+        </aside>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ===================================================
+         REPORT FORM
+         =================================================== -->
+
+    <section
+      id="report-form"
+      class="section"
+      style="padding-top:15px"
+    >
+
+
+      <div class="section-head">
+
+        <div>
+
+          <div class="eyebrow">
+            CITIZEN REPORTING
+          </div>
+
+
+          <h2>
+            Submit an official civic complaint
+          </h2>
+
+
+          <p class="muted">
+
+            Select the location,
+            describe the problem,
+            add evidence and submit
+            the civic report.
+
+          </p>
+
+        </div>
+
+      </div>
+
+
+
+      <div class="report-grid">
+
+
+        <!-- =================================================
+             FORM CARD
+             ================================================= -->
+
+        <div class="card">
+
+
+          <!-- STEP 1 -->
+
+          <div class="form-step">
+
+            <span>
+              1
+            </span>
+
+
+            <div>
+
+              <h3>
+                Choose location
+              </h3>
+
+
+              <p>
+
+                Click anywhere on the Mumbai
+                map above. You can change
+                the location at any time.
+
+              </p>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- LOCATION DISPLAY -->
+
+          <div
+            class="card"
+            style="
+              background:var(--surface2);
+              box-shadow:none;
+              padding:18px;
+              margin-bottom:20px;
+            "
+          >
+
+            <b
+              id="locationText"
+            >
+              Andheri West, Mumbai
+            </b>
+
+
+            <small
+              id="locationCoords"
+              style="
+                display:block;
+                color:var(--muted);
+                margin-top:5px;
+              "
+            >
+              19.13640, 72.82960
+            </small>
+
+          </div>
+
+
+          <!-- HIDDEN LOCATION FIELDS -->
+
+          <input
+            type="hidden"
+            id="lat"
+          >
+
+
+          <input
+            type="hidden"
+            id="lng"
+          >
+
+
+          <input
+            type="hidden"
+            id="location"
+          >
+
+
+
+          <!-- STEP 2 -->
+
+          <div class="form-step">
+
+            <span>
+              2
+            </span>
+
+
+            <div>
+
+              <h3>
+                Describe the issue
+              </h3>
+
+
+              <p>
+
+                Give the report a clear heading
+                and enough detail for the
+                responsible body.
+
+              </p>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- ISSUE TITLE -->
+
+          <label
+            class="field-label"
+            for="issueTitle"
+          >
+            What is the issue? — Heading
+          </label>
+
+
+          <input
+            id="issueTitle"
+            class="input"
+            maxlength="100"
+            placeholder="Example: Large pothole near school entrance"
+          >
+
+
+
+          <!-- DESCRIPTION -->
+
+          <label
+            class="field-label"
+            for="description"
+          >
+            Detailed description
+          </label>
+
+
+          <textarea
+            id="description"
+            class="textarea"
+            maxlength="1200"
+            placeholder="Explain what is happening, how it affects people, how long you have noticed it, and any useful details."
+          ></textarea>
+
+
+
+          <!-- CATEGORY -->
+
+          <label class="field-label">
+
+            Issue category
+
+          </label>
+
+
+          <div class="category-grid">
+
+
+            <button
+              type="button"
+              class="cat selected"
+              data-cat="Pothole"
+            >
+
+              🚧
+
+              <span>
+                Pothole
+              </span>
+
+            </button>
+
+
+            <button
+              type="button"
+              class="cat"
+              data-cat="Garbage"
+            >
+
+              🗑️
+
+              <span>
+                Garbage
+              </span>
+
+            </button>
+
+
+            <button
+              type="button"
+              class="cat"
+              data-cat="Streetlight"
+            >
+
+              💡
+
+              <span>
+                Streetlight
+              </span>
+
+            </button>
+
+
+            <button
+              type="button"
+              class="cat"
+              data-cat="Water"
+            >
+
+              💧
+
+              <span>
+                Water / Drainage
+              </span>
+
+            </button>
+
+
+            <button
+              type="button"
+              class="cat"
+              data-cat="Footpath"
+            >
+
+              🚶
+
+              <span>
+                Footpath
+              </span>
+
+            </button>
+
+
+            <button
+              type="button"
+              class="cat"
+              data-cat="Other"
+            >
+
+              📍
+
+              <span>
+                Other
+              </span>
+
+            </button>
+
+          </div>
+
+
+
+          <!-- AUTHORITY -->
+
+          <label
+            class="field-label"
+            for="authoritySelect"
+          >
+
+            Tag responsible civic /
+            government body
+
+          </label>
+
+
+          <select
+            id="authoritySelect"
+            class="select"
+          >
+
+            <option>
+              BMC — Road / Infrastructure
+            </option>
+
+            <option>
+              BMC — Solid Waste Management
+            </option>
+
+            <option>
+              BMC — Storm Water / Drainage
+            </option>
+
+            <option>
+              BMC — Water Supply
+            </option>
+
+            <option>
+              BMC — Public / Street Infrastructure
+            </option>
+
+            <option>
+              Mumbai Traffic Police — traffic-related
+            </option>
+
+            <option>
+              MSEDCL — electricity-related
+            </option>
+
+            <option>
+              Other / Not sure — admin routing required
+            </option>
+
+          </select>
+
+
+          <p
+            class="muted"
+            style="
+              font-size:13px;
+              margin-top:10px;
+            "
+          >
+
+            In the production system,
+            the selected location and
+            category should be matched
+            against an administrator-managed
+            official jurisdiction and
+            department database.
+
+          </p>
+
+
+
+          <!-- STEP 3 -->
+
+          <div class="form-step">
+
+            <span>
+              3
+            </span>
+
+
+            <div>
+
+              <h3>
+                Add photos
+              </h3>
+
+
+              <p>
+
+                You can attach up to
+                <b>5 photos</b>
+                of the problem.
+
+              </p>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- PHOTO UPLOAD -->
+
+          <label class="upload">
+
+            <input
+              id="photoInput"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              multiple
+            >
+
+
+            <strong>
+              ＋ Add up to 5 photos
+            </strong>
+
+
+            <span>
+              JPG, PNG or WebP • maximum 5
+            </span>
+
+          </label>
+
+
+          <div
+            id="previews"
+            class="previews"
+          ></div>
+
+
+
+          <!-- SUBMIT -->
+
+          <button
+            class="primary full"
+            type="button"
+            id="submitComplaintBtn"
+          >
+
+            Submit civic complaint →
+
+          </button>
+
+        </div>
+
+
+
+        <!-- =================================================
+             SMART ROUTING CARD
+             ================================================= -->
+
+        <aside
+          class="card routing-card"
+        >
+
+          <div class="eyebrow">
+            SMART ROUTING
+          </div>
+
+
+          <h3
+            style="
+              font-size:24px;
+            "
+          >
+            Where will this report go?
+          </h3>
+
+
+          <p class="muted">
+
+            Your location and selected
+            category are used to identify
+            the responsible body.
+
+          </p>
+
+
+
+          <!-- ROUTING -->
+
+          <div class="route">
+
+
+            <!-- LOCATION -->
+
+            <div>
+
+              <span>
+                LOCATION
+              </span>
+
+
+              <b id="routeLocation">
+                Andheri West
+              </b>
+
+            </div>
+
+
+            <i>
+              ↓
+            </i>
+
+
+
+            <!-- ISSUE -->
+
+            <div>
+
+              <span>
+                ISSUE
+              </span>
+
+
+              <b id="routeIssue">
+                Pothole
+              </b>
+
+            </div>
+
+
+            <i>
+              ↓
+            </i>
+
+
+
+            <!-- AUTHORITY -->
+
+            <div class="authority">
+
+              <span>
+                TAGGED RESPONSIBLE BODY
+              </span>
+
+
+              <b>
+                BMC — Road / Infrastructure
+              </b>
+
+
+              <small>
+                Dashboard delivery
+                enabled in prototype.
+              </small>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- AI BOX -->
+
+          <div class="ai-box">
+
+            <div>
+              ✦ AI ASSISTANCE
+            </div>
+
+
+            <b id="aiResult">
+              Pothole detected ·
+              94% confidence
+            </b>
+
+
+            <span>
+              AI suggestions remain
+              editable by the citizen.
+            </span>
+
+          </div>
+
+        </aside>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ===================================================
+         YOUR REPORTS
+         =================================================== -->
+
+    <section
+      id="my-reports"
+      class="section"
+    >
+
+      <div class="section-head">
+
+        <div>
+
+          <div class="eyebrow">
+            YOUR REPORTS
+          </div>
+
+
+          <h2>
+            Reports you have submitted
+          </h2>
+
+
+          <p class="muted">
+
+            Your reports are saved in this
+            browser prototype. Each report
+            has a complaint ID that can be
+            used for tracking.
+
+          </p>
+
+        </div>
+
+
+        <a
+          class="primary"
+          href="map-report.html#report-form"
+        >
+
+          ＋ New report
+
+        </a>
+
+      </div>
+
+
+      <div
+        id="myReports"
+        class="reports-list"
+      ></div>
+
+    </section>
+
+
+  </main>
+
+
+
+  <!-- =====================================================
+       SUCCESS MODAL
+       ===================================================== -->
+
+  <div
+    id="modal"
+    class="modal-backdrop"
+    aria-hidden="true"
+  >
+
+    <div class="modal">
+
+      <div class="eyebrow">
+        REPORT SUBMITTED
+      </div>
+
+
+      <h2>
+        Your complaint has been received.
+      </h2>
+
+
+      <p class="muted">
+
+        Your report has been saved.
+        You can find it under
+        <b>Your Reports</b>.
+
+      </p>
+
+
+      <div
+        class="complaint-id"
+        id="modalId"
+      >
+        MUM-2026-001246
+      </div>
+
+
+      <div class="modal-actions">
+
+        <a
+          class="primary"
+          href="dashboard.html"
+          data-modal-dashboard
+        >
+          View Your Dashboard
+        </a>
+
+
+        <button
+          class="secondary"
+          type="button"
+          data-modal-close
+        >
+          Close
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- =====================================================
+       FOOTER
+       ===================================================== -->
+
+  <footer class="footer">
+
+    <span>
+      © 2026 CivicMap Mumbai —
+      Academic prototype
+    </span>
+
+
+    <span>
+      Report • Track • Resolve • Verify
+    </span>
+
+  </footer>
+
+
+
+  <!-- =====================================================
+       TOAST
+       ===================================================== -->
+
+  <div
+    id="toast"
+    class="toast"
+  ></div>
+
+
+
+  <!-- =====================================================
+       LEAFLET JAVASCRIPT
+       ===================================================== -->
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    crossorigin="anonymous"
+  ></script>
+
+
+  <!-- =====================================================
+       CIVICMAP JAVASCRIPT
+       ===================================================== -->
+
+  <script src="app.js"></script>
+  <script src="auth.js"></script>
+
+
+</body>
+
+</html>

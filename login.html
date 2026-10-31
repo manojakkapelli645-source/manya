@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem("civicmap_theme_clean");
+        document.documentElement.classList.toggle("dark", savedTheme === "dark");
+      } catch (e) {}
+    })();
+  </script>
+
+  <title>CivicMap Mumbai — Log in</title>
+
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="auth.css">
+</head>
+
+<body>
+
+  <!-- ================= HEADER ================= -->
+
+  <header class="topbar">
+
+    <a class="brand" href="index.html">
+      <div class="brandmark">M</div>
+      <div>
+        <strong>CivicMap Mumbai</strong>
+        <span>Report • Track • Resolve</span>
+      </div>
+    </a>
+
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="map-report.html">Map & Report</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="community.html">Community</a>
+      <a href="about.html">About</a>
+    </nav>
+
+    <button class="mobile-menu-btn" id="mobileMenuToggle" type="button" aria-label="Open navigation" aria-expanded="false">☰</button>
+
+    <div class="header-actions">
+      <button class="theme-switch" id="themeToggle" type="button" aria-label="Switch theme" title="Switch theme">☾ <span>Dark</span></button>
+    </div>
+
+  </header>
+
+
+  <!-- ================= LOGIN ================= -->
+
+  <main class="auth-page">
+
+    <div class="auth-shell">
+
+      <aside class="auth-aside">
+        <div class="eyebrow">WELCOME TO CIVICMAP</div>
+        <h1>Your account for a <em>better Mumbai.</em></h1>
+        <p>Log in to link your complaints to your name. BMC officers and admins use the same page to manage complaints.</p>
+        <ul>
+          <li>Report potholes, garbage, drains and more</li>
+          <li>Track every complaint until it is fixed</li>
+          <li>Admins update status and close complaints</li>
+        </ul>
+      </aside>
+
+      <section class="auth-main">
+
+        <!-- Already logged in -->
+        <div class="auth-welcome" id="welcomeBox" hidden>
+          <h2 id="welcomeTitle">You are logged in</h2>
+          <p id="welcomeText"></p>
+          <div class="row">
+            <a class="primary" id="welcomeContinue" href="map-report.html">Continue →</a>
+            <button class="secondary" id="welcomeLogout" type="button">Log out</button>
+          </div>
+        </div>
+
+        <div class="auth-tabs" id="authTabs" role="tablist">
+          <button type="button" class="active" id="tabLogin" role="tab" aria-selected="true">Log in</button>
+          <button type="button" id="tabRegister" role="tab" aria-selected="false">Create account</button>
+        </div>
+
+        <!-- LOG IN -->
+        <form class="auth-form" id="loginForm" novalidate>
+          <h2>Log in</h2>
+
+          <label>
+            Email or admin username
+            <input id="loginId" type="text" autocomplete="username" placeholder="you@example.com" required>
+          </label>
+
+          <label>
+            Password
+            <div class="password-field">
+              <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Your password" required>
+              <button type="button" data-toggle-password="loginPassword">Show</button>
+            </div>
+          </label>
+
+          <p class="auth-error" id="loginError" role="alert"></p>
+
+          <button class="primary" id="loginButton" type="submit">Log in →</button>
+
+          <p class="auth-hint">Admin? Use the admin username and password from the README file.</p>
+        </form>
+
+        <!-- CREATE ACCOUNT -->
+        <form class="auth-form" id="registerForm" novalidate hidden>
+          <h2>Create your account</h2>
+
+          <label>
+            Full name
+            <input id="regName" type="text" autocomplete="name" placeholder="Your name" required>
+          </label>
+
+          <label>
+            Email
+            <input id="regEmail" type="email" autocomplete="email" placeholder="you@example.com" required>
+          </label>
+
+          <label>
+            Password
+            <div class="password-field">
+              <input id="regPassword" type="password" autocomplete="new-password" placeholder="At least 6 characters" required>
+              <button type="button" data-toggle-password="regPassword">Show</button>
+            </div>
+          </label>
+
+          <p class="auth-error" id="registerError" role="alert"></p>
+
+          <button class="primary" id="registerButton" type="submit">Create account →</button>
+
+          <p class="auth-hint">Citizen accounts can report and track complaints. Admin accounts cannot be created here.</p>
+        </form>
+
+      </section>
+
+    </div>
+
+  </main>
+
+
+  <!-- ================= FOOTER ================= -->
+
+  <footer class="footer">
+    <span>© 2026 CivicMap Mumbai — Academic prototype</span>
+    <span>Report • Track • Resolve • Verify</span>
+  </footer>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="app.js"></script>
+  <script src="auth.js"></script>
+
+  <script>
+    (function () {
+
+      const $ = (id) => document.getElementById(id);
+
+      // Only allow going to a page of this website (like admin.html).
+      function safeNext() {
+        const next = new URLSearchParams(window.location.search).get("next") || "";
+        return /^[a-z0-9_-]+\.html(#[\w-]*)?$/i.test(next) ? next : "";
+      }
+
+      function whereTo(user) {
+        const next = safeNext();
+        if (user.role === "admin") return next === "admin.html" || !next ? "admin.html" : next;
+        return next && next !== "admin.html" ? next : "map-report.html";
+      }
+
+      /* ----- tabs ----- */
+
+      function showTab(name) {
+        const login = name === "login";
+        $("loginForm").hidden = !login;
+        $("registerForm").hidden = login;
+        $("tabLogin").classList.toggle("active", login);
+        $("tabRegister").classList.toggle("active", !login);
+        $("tabLogin").setAttribute("aria-selected", String(login));
+        $("tabRegister").setAttribute("aria-selected", String(!login));
+        $("loginError").textContent = "";
+        $("registerError").textContent = "";
+      }
+
+      $("tabLogin").addEventListener("click", () => showTab("login"));
+      $("tabRegister").addEventListener("click", () => showTab("register"));
+
+      /* ----- show / hide password ----- */
+
+      document.querySelectorAll("[data-toggle-password]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const input = $(button.dataset.togglePassword);
+          const show = input.type === "password";
+          input.type = show ? "text" : "password";
+          button.textContent = show ? "Hide" : "Show";
+        });
+      });
+
+      /* ----- send to the backend ----- */
+
+      async function submit(event, path, bodyBuilder, errorBox, button, busyText, idleText) {
+
+        event.preventDefault();
+        errorBox.textContent = "";
+
+        const body = bodyBuilder();
+
+        if (!body) return;
+
+        button.disabled = true;
+        button.textContent = busyText;
+
+        try {
+
+          const data = await CivicAuth.request(path, { method: "POST", body });
+
+          CivicAuth.save(data.token, data.user);
+
+          window.location.href = whereTo(data.user);
+
+        } catch (error) {
+
+          errorBox.textContent = error.message;
+          button.disabled = false;
+          button.textContent = idleText;
+        }
+      }
+
+      $("loginForm").addEventListener("submit", (event) => {
+        submit(
+          event,
+          "/api/auth/login",
+          () => {
+            const identifier = $("loginId").value.trim();
+            const password = $("loginPassword").value;
+            if (!identifier || !password) {
+              $("loginError").textContent = "Please enter your email and password.";
+              return null;
+            }
+            return { identifier, password };
+          },
+          $("loginError"),
+          $("loginButton"),
+          "Logging in…",
+          "Log in →"
+        );
+      });
+
+      $("registerForm").addEventListener("submit", (event) => {
+        submit(
+          event,
+          "/api/auth/register",
+          () => {
+            const name = $("regName").value.trim();
+            const email = $("regEmail").value.trim();
+            const password = $("regPassword").value;
+            if (!name || !email || !password) {
+              $("registerError").textContent = "Please fill in all the fields.";
+              return null;
+            }
+            if (password.length < 6) {
+              $("registerError").textContent = "Password must be at least 6 characters.";
+              return null;
+            }
+            return { name, email, password };
+          },
+          $("registerError"),
+          $("registerButton"),
+          "Creating account…",
+          "Create account →"
+        );
+      });
+
+      /* ----- already logged in ----- */
+
+      const user = CivicAuth.getUser();
+
+      if (user) {
+
+        $("welcomeBox").hidden = false;
+        $("authTabs").hidden = true;
+        $("loginForm").hidden = true;
+        $("registerForm").hidden = true;
+
+        $("welcomeTitle").textContent = `Hello, ${user.name.split(" ")[0]}!`;
+        $("welcomeText").textContent =
+          user.role === "admin"
+            ? "You are logged in as an admin."
+            : `You are logged in as ${user.email}.`;
+
+        $("welcomeContinue").href = whereTo(user);
+        $("welcomeContinue").textContent = user.role === "admin" ? "Open admin panel →" : "Report an issue →";
+
+        $("welcomeLogout").addEventListener("click", () => CivicAuth.logout("login.html"));
+      }
+
+    })();
+  </script>
+
+</body>
+
+</html>
